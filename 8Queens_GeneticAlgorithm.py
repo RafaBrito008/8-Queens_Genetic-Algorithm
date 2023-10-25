@@ -8,9 +8,9 @@ SIZE = 50
 COLOR_QUEEN = "red"
 FONT_QUEEN = ("Arial", int(SIZE / 1.5))
 
-INDIVIDUOS = 500
+INDIVIDUOS = 300
 GENERACIONES = 1000
-PROB_MUTACION = 0.05
+PROB_MUTACION = 0.2
 
 
 def fitness(individuo):
@@ -93,7 +93,7 @@ def algoritmo_genetico():
         fit_values = [fitness(ind) for ind in poblacion]
         mejor_fit = min(fit_values)
         if mejor_fit == 0:
-            print(f"Generación {generacion + 1}: Solución encontrada!")
+            print(f"Generación {generacion + 1} -> Se ha encontrado una solución")
             solucion = poblacion[fit_values.index(mejor_fit)]
             print(
                 solucion + 1
@@ -102,7 +102,9 @@ def algoritmo_genetico():
             app.draw_board_with_solution(solucion)
             break
         else:
-            print(f"Generación {generacion + 1}: Menor número de ataques = {mejor_fit}")
+            print(
+                f"Generación {generacion + 1} -> Menor número de ataques = {mejor_fit}"
+            )
 
 
 if __name__ == "__main__":
