@@ -1,6 +1,12 @@
 import numpy as np
 import random
-import matplotlib.pyplot as plt
+import tkinter as tk
+from tkinter import Canvas
+
+DIMENSION = 8
+SIZE = 50
+COLOR_QUEEN = "red"
+FONT_QUEEN = ("Arial", int(SIZE / 1.5))
 
 
 def fitness(individuo):
@@ -33,18 +39,33 @@ def mutar(individuo):
     return individuo
 
 
-def mostrar_tablero(solucion):
-    tablero = np.zeros((8, 8))
-    for i in range(8):
-        tablero[solucion[i], i] = 1
+class Chessboard(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("8 Reinas con Algoritmo Genético")
+        self.canvas = Canvas(self, width=SIZE * DIMENSION, height=SIZE * DIMENSION)
+        self.canvas.pack(pady=20)
 
-    plt.imshow(tablero, cmap='binary')
-    plt.show()
+    def draw_board_with_solution(self, solution):
+        for row in range(DIMENSION):
+            for col in range(DIMENSION):
+                x1, y1 = col * SIZE, row * SIZE
+                x2, y2 = x1 + SIZE, y1 + SIZE
+
+                color = "white" if (row + col) % 2 == 0 else "black"
+
+                self.canvas.create_rectangle(x1, y1, x2, y2, fill=color)
+
+        for col, row in enumerate(solution):
+            x, y = (col + 0.5) * SIZE, (row + 0.5) * SIZE
+            self.canvas.create_text(x, y, text="♛", font=FONT_QUEEN, fill=COLOR_QUEEN)
+
+        self.mainloop()
 
 
 def algoritmo_genetico():
-    num_poblacion = 100
-    generaciones = 1000
+    num_poblacion = 500
+    generaciones = 100
     prob_mutacion = 0.05
 
     poblacion = [np.random.permutation(8) for _ in range(num_poblacion)]
@@ -75,7 +96,8 @@ def algoritmo_genetico():
             print(f"Generación {generacion + 1}: Solución encontrada!")
             solucion = poblacion[fit_values.index(mejor_fit)]
             print(solucion)
-            mostrar_tablero(solucion)
+            app = Chessboard()
+            app.draw_board_with_solution(solucion)
             break
         else:
             print(f"Generación {generacion + 1}: Mejor fitness = {mejor_fit}")
