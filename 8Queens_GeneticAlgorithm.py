@@ -8,6 +8,10 @@ SIZE = 50
 COLOR_QUEEN = "red"
 FONT_QUEEN = ("Arial", int(SIZE / 1.5))
 
+INDIVIDUOS = 500
+GENERACIONES = 1000
+PROB_MUTACION = 0.05
+
 
 def fitness(individuo):
     ataques = 0
@@ -64,32 +68,24 @@ class Chessboard(tk.Tk):
 
 
 def algoritmo_genetico():
-    num_poblacion = 200
-    generaciones = 1000
-    prob_mutacion = 0.05
+    poblacion = [np.random.permutation(8) for _ in range(INDIVIDUOS)]
 
-    poblacion = [np.random.permutation(8) for _ in range(num_poblacion)]
-
-    for generacion in range(generaciones):
+    for generacion in range(GENERACIONES):
         fit_values = [fitness(ind) for ind in poblacion]
-
-        # Para seleccionar los padres, vamos a querer una probabilidad inversa.
-        # Un valor de fitness más bajo (menos ataques) debería tener una mayor probabilidad.
-        total_fit = sum(fit_values)
         probabilidades = [1 / i if i != 0 else 1 for i in fit_values]
         s = sum(probabilidades)
         probabilidades = [i / s for i in probabilidades]
 
         nuevos_individuos = []
 
-        for _ in range(num_poblacion // 2):
+        for _ in range(INDIVIDUOS // 2):
             padre1, padre2 = seleccionar_padres(poblacion, probabilidades)
             hijo1, hijo2 = crossover(padre1, padre2)
             nuevos_individuos.extend([hijo1, hijo2])
 
         poblacion = nuevos_individuos
 
-        if random.random() < prob_mutacion:
+        if random.random() < PROB_MUTACION:
             indice = np.random.randint(0, len(poblacion))
             individuo_a_mutar = poblacion[indice]
             mutar(individuo_a_mutar)
@@ -99,7 +95,9 @@ def algoritmo_genetico():
         if mejor_fit == 0:
             print(f"Generación {generacion + 1}: Solución encontrada!")
             solucion = poblacion[fit_values.index(mejor_fit)]
-            print(solucion)
+            print(
+                solucion + 1
+            )  # Sumar 1 a cada elemento para que las posiciones comiencen en 1
             app = Chessboard()
             app.draw_board_with_solution(solucion)
             break
