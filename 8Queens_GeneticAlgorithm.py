@@ -17,7 +17,7 @@ def fitness(individuo):
                 ataques += 1
             elif abs(individuo[i] - individuo[j]) == abs(i - j):
                 ataques += 1
-    return 28 - ataques
+    return ataques
 
 
 def seleccionar_padres(poblacion, probabilidades):
@@ -64,17 +64,21 @@ class Chessboard(tk.Tk):
 
 
 def algoritmo_genetico():
-    num_poblacion = 500
-    generaciones = 100
+    num_poblacion = 200
+    generaciones = 1000
     prob_mutacion = 0.05
 
     poblacion = [np.random.permutation(8) for _ in range(num_poblacion)]
 
     for generacion in range(generaciones):
         fit_values = [fitness(ind) for ind in poblacion]
+
+        # Para seleccionar los padres, vamos a querer una probabilidad inversa.
+        # Un valor de fitness más bajo (menos ataques) debería tener una mayor probabilidad.
         total_fit = sum(fit_values)
-        probabilidades = [i / total_fit for i in fit_values]
-        probabilidades = [i/sum(probabilidades) for i in probabilidades]
+        probabilidades = [1 / i if i != 0 else 1 for i in fit_values]
+        s = sum(probabilidades)
+        probabilidades = [i / s for i in probabilidades]
 
         nuevos_individuos = []
 
@@ -91,8 +95,8 @@ def algoritmo_genetico():
             mutar(individuo_a_mutar)
 
         fit_values = [fitness(ind) for ind in poblacion]
-        mejor_fit = max(fit_values)
-        if mejor_fit == 28:
+        mejor_fit = min(fit_values)
+        if mejor_fit == 0:
             print(f"Generación {generacion + 1}: Solución encontrada!")
             solucion = poblacion[fit_values.index(mejor_fit)]
             print(solucion)
@@ -100,7 +104,7 @@ def algoritmo_genetico():
             app.draw_board_with_solution(solucion)
             break
         else:
-            print(f"Generación {generacion + 1}: Mejor fitness = {mejor_fit}")
+            print(f"Generación {generacion + 1}: Menor número de ataques = {mejor_fit}")
 
 
 if __name__ == "__main__":
